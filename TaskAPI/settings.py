@@ -110,6 +110,8 @@ REST_FRAMEWORK = {
     )
 }
 
+AUTH_USER_MODEL = 'TaskApp.CustomUser'
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
 }
