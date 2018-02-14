@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url
 from rest_framework import routers
-from TaskApp.views import UserView, RegistrationView
+from TaskApp.views import RegistrationView
+from django.conf.urls import url
+from TaskApp import views
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -26,6 +28,7 @@ router = routers.DefaultRouter()
 urlpatterns = [
     url(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     url(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
-    url(r'^api/user/$', UserView.as_view(), name='user_view'),
     url(r'^api/signup/$', RegistrationView.as_view(), name='registration_view'),
+    url(r'^api/user/$', views.UserViewList.as_view()),
+    url(r'^api/user/(?P<pk>[0-9]+)/$', views.UserViewDetail.as_view()),
 ]
