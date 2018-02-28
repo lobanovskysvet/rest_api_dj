@@ -1,16 +1,10 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import api_view
-from rest_framework.generics import RetrieveAPIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from rest_framework import permissions
-
 from TaskApp.models import CustomUser
 from .Serializers import UserAccountSerializer, UserViewSerializer
-
-
 
 
 class RegistrationView(APIView):
@@ -23,17 +17,8 @@ class RegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class UserViewList(APIView):
     permission_classes = (IsAuthenticated,)
-
-    def get(self):
-        content = {
-            'status': 'request was permitted'
-        }
-        return Response(content)
-
-class UserViewList(APIView):
 
     def get(self, request, format=None):
         customusers = CustomUser.objects.all()
@@ -41,23 +26,13 @@ class UserViewList(APIView):
         return Response(serializer.data)
 
 
-
 class UserViewDetail(APIView):
     permission_classes = (IsAuthenticated,)
-
-    def get(self):
-        content = {
-            'status': 'request was permitted'
-        }
-        return Response(content)
-
-class UserViewDetail(APIView):
-
 
     def get_object(request, pk):
         return CustomUser.objects.get(pk=pk)
 
-    def post(self,request, pk, format=None):
+    def post(self, request, pk, format=None):
         customusers = self.get_object(pk)
         serializer = UserViewSerializer(data=request.data)
         if serializer.is_valid():
@@ -65,12 +40,12 @@ class UserViewDetail(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self,request, pk, format=None):
+    def get(self, request, pk, format=None):
         customusers = self.get_object(pk)
         serializer = UserViewSerializer(customusers)
         return Response(serializer.data)
 
-    def put(self,request,pk,format=None):
+    def put(self, request, pk, format=None):
         customusers = self.get_object(pk)
         serializer = UserViewSerializer(customusers, data=request.data)
         if serializer.is_valid():
@@ -78,7 +53,7 @@ class UserViewDetail(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self,request, pk, format=None):
+    def delete(self, request, pk, format=None):
         customusers = self.get_object(pk)
         customusers.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

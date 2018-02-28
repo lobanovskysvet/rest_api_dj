@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'TaskAPI',
     'rest_framework',
-    'oauthlib'
     'TaskApp',
 ]
 
