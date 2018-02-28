@@ -16,11 +16,10 @@ Including another URLconf
 from django.conf.urls import url
 from rest_framework import routers
 from TaskApp.views import RegistrationView
-<<<<<<< HEAD
+
 from django.conf.urls import url , include
-=======
 from django.conf.urls import url
->>>>>>> 9086234d442086cbb71b021b174feac5cb00a949
+
 from TaskApp import views
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -35,8 +34,6 @@ urlpatterns = [
     url(r'^api/signup/$', RegistrationView.as_view(), name='registration_view'),
     url(r'^api/user/$', views.UserViewList.as_view()),
     url(r'^api/user/(?P<pk>[0-9]+)/$', views.UserViewDetail.as_view()),
-<<<<<<< HEAD
+
    ]
-=======
-]
->>>>>>> 9086234d442086cbb71b021b174feac5cb00a949
+
