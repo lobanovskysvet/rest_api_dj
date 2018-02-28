@@ -29,6 +29,8 @@ urlpatterns = [
     url(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     url(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
     url(r'^api/signup/$', RegistrationView.as_view(), name='registration_view'),
+    url(r'^api/reset/$', views.send_reset_password_link),
+    url(r'^api/reset/(?P<pk>.+)$', views.generate_new_password),
     url(r'^api/user/$', views.UserViewList.as_view()),
     url(r'^api/user/(?P<pk>[0-9]+)/$', views.UserViewDetail.as_view()),
 ]

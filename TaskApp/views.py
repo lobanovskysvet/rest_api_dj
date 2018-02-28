@@ -1,10 +1,48 @@
+from django.contrib.auth.hashers import make_password
 from rest_framework import status
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.utils import json
 from rest_framework.views import APIView
 
 from TaskApp.models import CustomUser
-from .Serializers import UserAccountSerializer, UserViewSerializer
+from TaskApp.utils import get_encoded_base64_user_data_string, send_reset_password_email, \
+    get_decoded_base64_user_data_encoded_string, get_random_string
+from .Serializers import UserAccountSerializer, UserViewSerializer, UserPasswordResetViewSerializer
+
+
+@api_view(http_method_names=['POST'])
+@parser_classes((JSONParser,))
+def send_reset_password_link(request):
+    if request.data['username'] and request.data['email']:
+        userToResest = CustomUser.objects.filter(email=request.data['email'], username=request.data['username']).first()
+        if userToResest is not None:
+            send_reset_password_email(request.data['email'],
+                                      get_encoded_base64_user_data_string(
+                                          UserPasswordResetViewSerializer(request.data)))
+            return Response(status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view()
+def generate_new_password(request, pk):
+    value = json.loads(get_decoded_base64_user_data_encoded_string(pk))
+    userToResest = CustomUser.objects.filter(email=value['email'], username=value['username']).first()
+    # Todo move to BL layer
+    if userToResest is not None:
+        newPassword = get_random_string()
+        encodedPassword = make_password(newPassword)
+        userToResest.password = encodedPassword
+        serializer = UserViewSerializer(userToResest, data={"password": encodedPassword})
+        if serializer.is_valid():
+            serializer.save()
+            # ToDo: send password via email instead of response
+            return Response({"password": newPassword}, status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class RegistrationView(APIView):

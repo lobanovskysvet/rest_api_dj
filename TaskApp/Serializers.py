@@ -12,7 +12,7 @@ class UserAccountSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = CustomUser(**validated_data)
-        send_email(validated_data['email'], 'Registration', 'Hi 123')
+        # send_email(validated_data['email'], 'Registration', 'Hi 123')
         user.password = make_password(validated_data['password'])
         user.save()
         return user.id
@@ -22,3 +22,9 @@ class UserViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('id', 'first_name', 'last_name', 'email', 'country')
+
+
+class UserPasswordResetViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email')
