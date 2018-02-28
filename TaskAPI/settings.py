@@ -37,8 +37,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+<<<<<<< HEAD
+    'TaskAPI',
     'TaskApp',
     'rest_framework',
+    'oauthlib'
+=======
+    'TaskApp',
+    'rest_framework',
+>>>>>>> 9086234d442086cbb71b021b174feac5cb00a949
 
 ]
 
@@ -103,10 +110,18 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+<<<<<<< HEAD
+
+=======
+>>>>>>> 9086234d442086cbb71b021b174feac5cb00a949
     ),
 
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
+<<<<<<< HEAD
+
+=======
+>>>>>>> 9086234d442086cbb71b021b174feac5cb00a949
     )
 }
 

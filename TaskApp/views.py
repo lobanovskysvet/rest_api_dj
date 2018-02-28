@@ -5,11 +5,16 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from rest_framework import permissions
+
 from TaskApp.models import CustomUser
 from .Serializers import UserAccountSerializer, UserViewSerializer
 
 
+
+
 class RegistrationView(APIView):
+
     def post(self, request):
         serializer = UserAccountSerializer(data=request.data)
         if serializer.is_valid():
@@ -17,13 +22,37 @@ class RegistrationView(APIView):
             return Response(generated_id, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
 class UserViewList(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self):
+        content = {
+            'status': 'request was permitted'
+        }
+        return Response(content)
+
+class UserViewList(APIView):
+
     def get(self, request, format=None):
         customusers = CustomUser.objects.all()
         serializer = UserViewSerializer(customusers, many=True)
         return Response(serializer.data)
 
+
+
 class UserViewDetail(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self):
+        content = {
+            'status': 'request was permitted'
+        }
+        return Response(content)
+
+class UserViewDetail(APIView):
+
 
     def get_object(request, pk):
         return CustomUser.objects.get(pk=pk)
