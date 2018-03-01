@@ -1,6 +1,6 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
-from rest_framework.decorators import api_view, parser_classes
+from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,8 +8,7 @@ from rest_framework.utils import json
 from rest_framework.views import APIView
 
 from TaskApp.models import CustomUser
-from TaskApp.utils import get_encoded_base64_user_data_string, send_reset_password_email, \
-    get_decoded_base64_user_data_encoded_string, get_random_string
+from TaskApp.utils import *
 from .Serializers import UserAccountSerializer, UserViewSerializer, UserPasswordResetViewSerializer
 
 
@@ -43,6 +42,22 @@ def generate_new_password(request, pk):
             return Response({"password": newPassword}, status=status.HTTP_202_ACCEPTED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
     return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(http_method_names=['POST'])
+@parser_classes((JSONParser,))
+@permission_classes((IsAuthenticated,))
+def set_new_password(request, pk):
+    if request.data['old_password'] and request.data['new_password']:
+        userToUpdate = CustomUser.objects.filter(pk=pk).first()
+        if userToUpdate is not None and userToUpdate.check_password(request.data['old_password']):
+            newHashedPassword = make_password(request.data['new_password'])
+            userToUpdate.password = newHashedPassword
+            serializer = UserViewSerializer(userToUpdate, data={"password": newHashedPassword})
+            if serializer.is_valid():
+                serializer.save()
+                return Response(status=status.HTTP_202_ACCEPTED)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class RegistrationView(APIView):

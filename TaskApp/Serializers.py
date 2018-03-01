@@ -2,7 +2,6 @@ from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
 from TaskApp.models import CustomUser
-from .utils import send_email
 
 
 class UserAccountSerializer(serializers.ModelSerializer):
