@@ -1,7 +1,7 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
-from TaskApp.models import CustomUser
+from TaskApp.models import CustomUser, Image
 
 
 class UserAccountSerializer(serializers.ModelSerializer):
@@ -27,3 +27,9 @@ class UserPasswordResetViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('username', 'email')
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
+        fields = ('file_name', 'extension', 'path', 'user')

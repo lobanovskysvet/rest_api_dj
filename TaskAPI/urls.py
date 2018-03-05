@@ -34,4 +34,7 @@ urlpatterns = [
     url(r'^api/user/$', views.UserViewList.as_view()),
     url(r'^api/user/(?P<pk>[0-9]+)/$', views.UserViewDetail.as_view()),
     url(r'^api/user/password/(?P<pk>[0-9]+)/$', views.set_new_password),
+    url(r'^api/user/(?P<pk>[0-9]+)/image/$', views.upload_user_file),
+    url(r'^api/user/file/$', views.UserFileList.as_view()),
+    url(r'^api/user/file/(?P<pk>[0-9]+)/$', views.UserFileDetail.as_view()),
 ]

@@ -1,15 +1,19 @@
+import uuid
+
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
 from rest_framework.decorators import api_view, parser_classes, permission_classes
-from rest_framework.parsers import JSONParser
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.utils import json
 from rest_framework.views import APIView
 
-from TaskApp.models import CustomUser
+from TaskApp.models import CustomUser, Image
 from TaskApp.utils import *
-from .Serializers import UserAccountSerializer, UserViewSerializer, UserPasswordResetViewSerializer
+from .Serializers import UserAccountSerializer, UserViewSerializer, UserPasswordResetViewSerializer, ImageSerializer
+
+FILE_FOLDER_PATH = '/'
 
 
 @api_view(http_method_names=['POST'])
@@ -68,6 +72,51 @@ class RegistrationView(APIView):
             generated_id = serializer.create(serializer.validated_data)
             return Response(generated_id, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(http_method_names=['POST'])
+@parser_classes((FormParser, MultiPartParser,))
+@permission_classes((IsAuthenticated,))
+def upload_user_file(request, pk):
+    user = CustomUser.objects.get(pk=pk)
+    if user is not None:
+        up_file = request.FILES['file']
+        file_extension = up_file.name.rsplit('.', 1)[1]
+        new_file_name = uuid.uuid4().hex
+
+        destination = open(FILE_FOLDER_PATH + new_file_name + '.' + file_extension, 'wb+')
+        for chunk in up_file.chunks():
+            destination.write(chunk)
+        destination.close()
+
+        imageData = Image(file_name=new_file_name,
+                          extension=file_extension,
+                          path=FILE_FOLDER_PATH,
+                          user=user)
+        imageData.save()
+        return Response(new_file_name, status.HTTP_201_CREATED)
+    return Response(status.HTTP_404_NOT_FOUND)
+
+
+class UserFileList(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        imagines = Image.objects.all()
+        serializer = ImageSerializer(imagines, many=True)
+        return Response(serializer.data)
+
+
+class UserFileDetail(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(request, pk):
+        return Image.objects.get(pk=pk)
+
+    def get(self, request, pk, format=None):
+        imagines = self.get_object(pk)
+        serializer = ImageSerializer(imagines)
+        return Response(serializer.data)
 
 
 class UserViewList(APIView):
