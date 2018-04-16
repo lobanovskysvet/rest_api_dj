@@ -13,8 +13,9 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from rest_framework import routers
+from django.urls import reverse
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -37,4 +38,6 @@ urlpatterns = [
     url(r'^api/user/(?P<pk>[0-9]+)/image/$', views.upload_user_file),
     url(r'^api/user/file/$', views.UserFileList.as_view()),
     url(r'^api/user/file/(?P<pk>[0-9]+)/$', views.UserFileDetail.as_view()),
+
+    url(r'^api/login/', include('rest_social_auth.urls_jwt')),
 ]
